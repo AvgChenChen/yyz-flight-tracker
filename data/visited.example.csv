@@ -1,0 +1,5 @@
+city,country,iata,visited_before,notes
+Dublin,Ireland,DUB,true,Made-up example: copy this file to visited.csv and list your own trips
+London,United Kingdom,LHR,true,
+New York,United States,JFK,true,
+Vancouver,Canada,YVR,true,

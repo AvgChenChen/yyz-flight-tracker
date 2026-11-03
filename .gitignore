@@ -1,0 +1,10 @@
+# Secrets and personal data stay on this computer
+.env
+data/visited.csv
+*.db
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
