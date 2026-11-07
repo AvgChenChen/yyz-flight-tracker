@@ -7,6 +7,7 @@ Endpoint: GET https://serpapi.com/search.json?engine=google_flights
 """
 
 import os
+import math
 import logging
 from datetime import datetime
 from typing import Optional
@@ -90,8 +91,14 @@ class SerpAPIClient:
         all_flights = data.get("best_flights", []) + data.get("other_flights", [])
 
         for flight in all_flights:
-            price = flight.get("price")
-            if not price:
+            raw_price = flight.get("price")
+            if isinstance(raw_price, bool):
+                continue
+            try:
+                price = float(raw_price)
+            except (TypeError, ValueError, OverflowError):
+                continue
+            if not math.isfinite(price) or price <= 0:
                 continue
 
             legs = flight.get("flights", [])
