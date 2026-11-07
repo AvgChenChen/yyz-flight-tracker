@@ -165,7 +165,7 @@ def _sort_results(results: list[dict], sort_by: str) -> list[dict]:
     key_map = {
         "cheapest": lambda r: r["price_cad"],
         "best_value": lambda r: -r.get("priority_score", 0),
-        "fewest_stops": lambda r: (r.get("stops") or 99),
+        "fewest_stops": lambda r: r["stops"] if r.get("stops") is not None else float("inf"),
         "shortest_duration": lambda r: (r.get("duration_min") or 9999),
         "new_destination_priority": lambda r: (int(r.get("visited_before", 0)), r["price_cad"]),
         "best_deal_rating": lambda r: (
