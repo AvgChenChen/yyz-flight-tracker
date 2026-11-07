@@ -37,7 +37,11 @@ class SerpAPIClient:
         max_price: Optional[int] = None,
         max_results: int = 5,
     ) -> list[dict]:
-        """Search Google Flights for a specific route."""
+        """Search Google Flights for a specific route, within the requested limits."""
+        if isinstance(max_results, bool) or not isinstance(max_results, int) or max_results < 0:
+            raise ValueError("max_results must be a non-negative integer")
+        if max_results == 0:
+            return []
         params = {
             "engine": "google_flights",
             "departure_id": origin,
@@ -51,6 +55,8 @@ class SerpAPIClient:
         }
         if return_date:
             params["return_date"] = return_date
+        if max_price is not None:
+            params["max_price"] = max_price
 
         try:
             resp = requests.get(SERPAPI_URL, params=params, timeout=20)
@@ -64,7 +70,10 @@ class SerpAPIClient:
             if "error" in data:
                 raise RuntimeError(f"SerpAPI error: {data['error']}")
 
-            return self._parse_flights(data, destination, depart_date, return_date)
+            offers = self._parse_flights(data, destination, depart_date, return_date)
+            if max_price is not None:
+                offers = [offer for offer in offers if offer["price_cad"] <= max_price]
+            return offers[:max_results]
 
         except requests.exceptions.ConnectionError:
             raise RuntimeError("Network error. Check your internet connection.")
